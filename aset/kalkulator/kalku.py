@@ -1,0 +1,10 @@
+a=int(input("masukan nilai pertama : "))
+b=int(input("Masukan nilai kedua : "))
+
+print("hasil penjumlahan : ",a+b)
+print("hasil pengurangan : ",a-b)
+print("hasil perkalian : ",a*b)
+print("hasil pembagian : ",a/b)
+print("hasil modulus : ",a%b)
+print("hasil pemangkatan : ",a**b)
+print("hasil pembagian bulat : ",a//b)
