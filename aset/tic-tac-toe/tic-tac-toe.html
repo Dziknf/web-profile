@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic-Tac-Toe</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, purple, orange);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .game-container {
+      text-align: center;
+      color: #fff;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 20px;
+      font-size: 1.2rem;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+      animation: slideIn 1s ease-out;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #fff;
+      font-size: 2.5rem;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .cell:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    .cell.winner {
+      background: #00e676 !important;
+      animation: glow 1s infinite alternate;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      background: #fff;
+      color: #4e54c8;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #f0f0f0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes glow {
+      from { box-shadow: 0 0 10px #00e676; }
+      to { box-shadow: 0 0 20px #00e676; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic-Tac-Toe</h1>
+    <div class="scoreboard">
+      <div>X: <span id="scoreX">0</span></div>
+      <div>O: <span id="scoreO">0</span></div>
+    </div>
+    <div class="board" id="board"></div>
+    <p id="status"></p>
+    <button onclick="startGame()">Main Lagi</button>
+    <button onclick="resetScore()">Reset Skor</button>
+  </div>
+
+  <script>
+    const boardEl = document.getElementById('board');
+    const statusEl = document.getElementById('status');
+    const scoreXEl = document.getElementById('scoreX');
+    const scoreOEl = document.getElementById('scoreO');
+
+    let cells = [];
+    let currentPlayer = 'X';
+    let gameActive = true;
+    let scoreX = 0;
+    let scoreO = 0;
+
+    function startGame() {
+      boardEl.innerHTML = '';
+      statusEl.textContent = '';
+      gameActive = true;
+      currentPlayer = 'X';
+      cells = Array(9).fill(null);
+
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.dataset.index = i;
+        cell.addEventListener('click', handleCellClick);
+        boardEl.appendChild(cell);
+      }
+    }
+
+    function handleCellClick(e) {
+      const index = e.target.dataset.index;
+
+      if (!gameActive || cells[index]) return;
+
+      cells[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+
+      const winPattern = checkWinner();
+      if (winPattern) {
+        statusEl.textContent = `Pemain ${currentPlayer} Menang!`;
+        gameActive = false;
+        highlightWinningCells(winPattern);
+        updateScore(currentPlayer);
+      } else if (!cells.includes(null)) {
+        statusEl.textContent = "Seri!";
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+
+      for (let pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (cells[a] && cells[a] === cells[b] && cells[a] === cells[c]) {
+          return pattern;
+        }
+      }
+      return null;
+    }
+
+    function highlightWinningCells(pattern) {
+      pattern.forEach(i => {
+        boardEl.children[i].classList.add('winner');
+      });
+    }
+
+    function updateScore(winner) {
+      if (winner === 'X') {
+        scoreX++;
+        scoreXEl.textContent = scoreX;
+      } else {
+        scoreO++;
+        scoreOEl.textContent = scoreO;
+      }
+    }
+
+    function resetScore() {
+      scoreX = 0;
+      scoreO = 0;
+      scoreXEl.textContent = scoreX;
+      scoreOEl.textContent = scoreO;
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
